@@ -22,6 +22,7 @@
   become_user: root
   roles:
     - slurm-master
+    - nextflow
 
 - name: Slurm worker
   hosts: slurm_worker
