@@ -22,7 +22,7 @@ Vagrant.configure("2") do |config|
   end
   config.vm.define "l1-c2r4" do |subconfig|
     subconfig.vm.hostname = "l1-c2r4"
-    subconfig.vm.box = "bento/ubuntu-20.04-arm64"
+    subconfig.vm.box = "bento/ubuntu-20.04"
     subconfig.vm.box_version = "202306.30.0"
     subconfig.vm.box_download_insecure = true
     subconfig.vm.network "private_network", ip: "192.168.58.10"
@@ -34,10 +34,10 @@ Vagrant.configure("2") do |config|
   end
 
   # Additional machine 1 with 2CPUs and 4GB RAM
-  # mac-c1-c4r8: node 1, 2 cpus and 4 GBs ram
+  # mac-c1-c2r4: node 1, 2 cpus and 4 GBs ram
   config.vm.define "mac-c1-c2r4" do |machine1|
-    machine1.vm.hostname = "mac-c1-c4r8"
-    machine1.vm.box = "bento/ubuntu-20.04"
+    machine1.vm.hostname = "mac-c1-c2r4"
+    machine1.vm.box = "bento/ubuntu-20.04-arm64"
     machine1.vm.box_version = "202306.30.0"
     machine1.vm.box_download_insecure = true
     machine1.vm.network "private_network", ip: "192.168.58.11"
@@ -53,7 +53,7 @@ Vagrant.configure("2") do |config|
     end
   end
   config.vm.define "c1-c2r4" do |machine1|
-    machine1.vm.hostname = "c1-c4r8"
+    machine1.vm.hostname = "c1-c2r4"
     machine1.vm.box = "bento/ubuntu-20.04"
     machine1.vm.box_version = "202306.30.0"
     machine1.vm.box_download_insecure = true
