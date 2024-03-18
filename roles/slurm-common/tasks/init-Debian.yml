@@ -1,0 +1,11 @@
+---
+
+- name: Set SLURM common playbook params (Debian/Ubuntu)
+  set_fact:
+    slurm_pid_dir: /var/run
+  when: is_debian_compatible
+
+- name: Set SLURM common playbook params (Debian 10+)
+  set_fact:
+    slurm_pid_dir: /var/run
+  when: is_debian_10_or_later or is_ubuntu_20_04

@@ -1,0 +1,31 @@
+---
+- name: Collect server information
+  hosts: all
+  gather_facts: yes
+  become: yes
+  become_user: root
+  tasks:
+  - name: Add the inventory into /etc/hosts
+
+    ansible.builtin.lineinfile:
+      dest: /etc/hosts
+      regexp: '.*{{ item }}$'
+      line: "{{ hostvars[item]['ansible_host'] }} {{item}}"
+      state: present
+    when: hostvars[item]['ansible_facts']['default_ipv4'] is defined
+    with_items:
+      - "{{ groups['all'] }}"
+
+- name: Slurm master
+  hosts: slurm_master
+  become: yes
+  become_user: root
+  roles:
+    - slurm-master
+
+- name: Slurm worker
+  hosts: slurm_worker
+  become: yes
+  become_user: root
+  roles:
+    - slurm-worker
