@@ -1,0 +1,186 @@
+---
+- name: Update apt package cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Load distribution-specific parameters
+  include_tasks: 'init-{{ansible_os_family}}.yml'
+
+
+# Otherwise `systemctl mask $someservice` fails on RHEL/CentOS7
+- name: Temporarily put SELinux in "permissive" mode (RHEL-family)
+  selinux:
+    policy: targeted
+    state: permissive
+  when: 'is_rhel_compatible and ansible_selinux.status == "enabled"'
+
+
+# need to do this here, as the SLURM packages are not yet installed
+- name: Create `slurm` system group
+  group:
+    name: slurm
+    system: yes
+  tags:
+    - slurm
+
+
+- name: Create `slurm` system user
+  user:
+    name: slurm
+    group: slurm
+    system: yes
+  tags:
+    - slurm
+
+
+# It can happen that, if SLURM is already installed (for instance when
+# starting from a snapshot, or when reconfiguring a cluster),
+# directories `.../slurm-llnl` already exist (because they're created
+# by Debian's `slurm-*` packages.  Try to fix it by *moving* these
+# directories where ElastiCluster expects to create them, clearing the
+# way for symlinks.
+#
+# FIXME: This does not really fix the issue; it's possible that system
+# upgrades will re-create the directory and we're not able to solve it
+# automatically.  It would be better to use the `.../slurm`
+# directories on RHEL/CentOS and `.../slurm-llnl` on Debian/Ubuntu
+# (i.e., make the directory name a distribution-dependent parameter)
+# but doing so will break existing installations.  So, fix this once
+# and for all once 1.3.0 is out and we're working on 1.4.devNNN
+#
+- name: Ensure we can create compatibility symlinks
+  shell: |
+    if test -L '{{ item.old }}'; then
+      dest=$(readlink -n -f '{{ item.old }}')
+      if [ "$dest" = $(realpath '{{ item.new }}') ]; then
+        # all OK
+        exit 0
+      else
+        # link to wrong directory, remove
+        rm -f -v '{{ item.old }}'
+      fi
+    elif test -d '{{ item.old }}'; then
+      if ! test -e '{{ item.new }}'; then
+        mv -v '{{ item.old }}' '{{ item.new }}'
+      else
+        echo 1>&2 "Both '{{ item.old }}' and '{{ item.new }}' exist -- cannot resolve automatically."
+        exit 73
+      fi
+    fi
+    exit 0
+  loop:
+    - { new: '/etc/slurm',     old: '/etc/slurm-llnl' }
+    - { new: '/var/lib/slurm', old: '/var/lib/slurm-llnl' }
+    - { new: '/var/log/slurm', old: '/var/log/slurm-llnl' }
+    - { new: '/var/run/slurm', old: '/var/run/slurm-llnl' }
+  when: is_debian_compatible
+  tags:
+    - slurm
+    - debian
+
+
+- name: Create work directory {{item}}
+  file:
+    path: '{{item}}'
+    state: directory
+    owner: slurm
+    group: slurm
+  loop:
+    - /etc/slurm
+    - /var/lib/slurm
+    - /var/lib/slurm/checkpoint
+    - /var/lib/slurm/slurmctld
+    - /var/lib/slurm/slurmd
+    - /var/log/slurm
+    - /var/run/slurm
+    - /var/spool/slurm
+  tags:
+    - slurm
+
+
+# Debian/Ubuntu packages place configuration in `/etc/slurm-llnl` and
+# logs in `/var/log/slurm-llnl` -- symlink this to `/etc/slurm` and
+# `/var/log/slurm` etc. so we need not worry about varying paths in
+# playbooks and config files
+- name: Make compatibility symlinks
+  file:
+    path: '{{ item.to }}'
+    src: '{{ item.from }}'
+    state: link
+    force: yes
+  loop:
+    - { from: '/etc/slurm',     to: '/etc/slurm-llnl' }
+    - { from: '/var/lib/slurm', to: '/var/lib/slurm-llnl' }
+    - { from: '/var/log/slurm', to: '/var/log/slurm-llnl' }
+  when: is_debian_compatible
+  tags:
+    - slurm
+    - debian
+
+
+- name: Make compatibility symlinks (optional)
+  file:
+    path: '{{ item.to }}'
+    src: '{{ item.from }}'
+    state: link
+    force: yes
+  ignore_errors: yes
+  loop:
+    - { from: '/var/run/slurm', to: '/var/run/slurm-llnl' }
+  when: is_debian_compatible
+  tags:
+    - slurm
+    - debian
+
+
+- name: Enable Copr SLURM repo by verdurin
+  tags:
+    - slurm
+  template:
+    src: copr-slurm.repo.j2
+    dest: '/etc/yum.repos.d/copr-slurm.repo'
+    mode: 0444
+  when: is_rhel_compatible
+
+
+- import_tasks: munge.yml
+
+
+- name: Deploy SLURM configuration file
+  tags:
+    - slurm
+  template:
+    src: '{{ slurm_conf_file|default("slurm.conf.j2") }}'
+    dest: '/etc/slurm/slurm.conf'
+    owner: root
+    group: root
+    mode: 0444
+
+
+- name: Install support packages (Debian/Ubuntu)
+  package:
+    name:
+      - libopenmpi-dev
+      - openmpi-bin
+    state: '{{ pkg_install_state }}'
+  when: is_debian_or_ubuntu
+
+
+- name: Install SLURM packages (RHEL-compatible)
+  package:
+    name:
+      - openmpi-devel
+    state: '{{ pkg_install_state }}'
+  when: 'is_rhel_compatible'
+
+
+- name: Enable SELinux (RHEL-family)
+  selinux:
+    policy: targeted
+    state: enforcing
+  when: 'is_rhel_compatible and ansible_selinux.status == "enabled" and not disable_selinux|default("no")|bool'
+
+- name: Restore SELinux labels on `/` (RHEL-family)
+  command: |
+    restorecon -r /
+  when: 'is_rhel_compatible and ansible_selinux.status == "enabled" and not disable_selinux|default("no")|bool'

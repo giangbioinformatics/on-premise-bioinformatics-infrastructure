@@ -1,0 +1,12 @@
+[slurm_master]
+mac-l1-c2r4 ansible_host=192.168.58.10
+
+[slurm_worker]
+mac-c1-c2r4 ansible_host=192.168.58.11
+
+[slurm:children]
+slurm_master
+slurm_worker
+
+[all:vars]
+ansible_user=vagrant
