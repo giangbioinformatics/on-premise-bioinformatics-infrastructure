@@ -23,6 +23,7 @@
   roles:
     - slurm-master
     - nextflow
+    - singularity
 
 - name: Slurm worker
   hosts: slurm_worker
@@ -30,3 +31,5 @@
   become_user: root
   roles:
     - slurm-worker
+    - singularity
+
