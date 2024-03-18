@@ -1,0 +1,4 @@
+---
+java_apt_package: openjdk-11-jdk
+java_yum_package: java-11.0.11-openjdk
+nextflow_version: 23.10.1

@@ -1,0 +1,38 @@
+---
+- name: Install Java package (Ubuntu/Debian)
+  apt:
+    name: "{{ java_apt_package }}"
+    state: present
+    update_cache: yes
+  when: 'is_debian_compatible'
+
+- name: Install Java package (CentOS/RHEL)
+  yum:
+    name: "{{ java_yum_package }}"
+    state: present
+    update_cache: yes
+  when: 'is_rhel_compatible'
+
+- name: Create nextflow directory
+  file:
+    path: /opt/nextflow
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Download nextflow container
+  get_url:
+    url: "https://github.com/nextflow-io/nextflow/releases/download/v{{ nextflow_version }}/nextflow-{{ nextflow_version }}-all"
+    dest: /opt/nextflow/nextflow
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Make nextflow match in $PATH
+  template:
+    src: "nextflow.sh.j2"
+    dest: "/etc/profile.d/nextflow.sh"
+    mode: 0444
+    owner: root
+    group: root
