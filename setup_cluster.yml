@@ -24,6 +24,7 @@
     - slurm-master
     - nextflow
     - singularity
+    - anaconda
 
 - name: Slurm worker
   hosts: slurm_worker
@@ -32,4 +33,5 @@
   roles:
     - slurm-worker
     - singularity
+    - anaconda
 
