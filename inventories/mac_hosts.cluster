@@ -10,3 +10,5 @@ slurm_worker
 
 [all:vars]
 ansible_user=vagrant
+nextflow_url=https://github.com/nextflow-io/nextflow/releases/download/v22.05.0-edge/nextflow-22.05.0-edge-all
+nextflow_path=/opt/nextflow-v22.05.0

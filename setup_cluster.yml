@@ -6,7 +6,6 @@
   become_user: root
   tasks:
   - name: Add the inventory into /etc/hosts
-
     ansible.builtin.lineinfile:
       dest: /etc/hosts
       regexp: '.*{{ item }}$'
@@ -21,17 +20,25 @@
   become: yes
   become_user: root
   roles:
-    - slurm-master
-    - nextflow
-    - singularity
-    - anaconda
+    # - slurm-master
+    # - nextflow
+    - nextflow-demo
+    # - anaconda
+    # - role: 'nfs-server'
+    #   NFS_EXPORTS:
+    #     - path: '/home/'
+    #       clients: "{{groups.slurm_worker + groups.slurm_submit|default([])}}"
 
-- name: Slurm worker
-  hosts: slurm_worker
-  become: yes
-  become_user: root
-  roles:
-    - slurm-worker
-    - singularity
-    - anaconda
+# - name: Slurm worker
+#   hosts: slurm_worker
+#   become: yes
+#   become_user: root
+#   roles:
+#     - slurm-worker
+#     - singularity
+#     - anaconda
+#     - role: 'nfs-client'
+#       NFS_MOUNTS:
+#         - fs: '{{groups.slurm_master[0]}}:/home'
+#           mountpoint: '/home'
 

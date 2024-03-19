@@ -1,0 +1,16 @@
+---
+- name: Create sample nextflow demo run
+  copy:
+    src: "fetchngs"
+    dest: "/home/{{ansible_user}}/"
+    mode: 0777
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Add config nextflow
+  copy:
+    src: "config"
+    dest: "/home/{{ansible_user}}/.nextflow/config"
+    mode: 0777
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"

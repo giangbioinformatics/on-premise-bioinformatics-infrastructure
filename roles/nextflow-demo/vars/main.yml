@@ -1,0 +1,1 @@
+is_slurm_master: '{{ ansible_hostname == slurm_master }}'
