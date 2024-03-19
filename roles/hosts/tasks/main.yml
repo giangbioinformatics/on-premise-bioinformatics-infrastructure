@@ -1,0 +1,46 @@
+# tasks file for ansible-singularity
+- name: Determine architecture
+  set_fact:
+    architecture: "{{ 'amd64' if ansible_architecture == 'x86_64' else 'arm64' }}"
+
+- name: Download the go package manager
+  get_url:
+    url: "https://go.dev/dl/go{{ go_version }}.linux-{{ architecture }}.tar.gz"
+    dest: "/tmp/go.tar.gz"
+    mode: 0644
+
+- name: Create the go directory
+  file:
+    path: "/opt/go{{ go_version }}.linux-{{ architecture }}"
+    state: directory
+    mode: 0755
+
+- name: Untar the go archive
+  unarchive:
+    src: "/tmp/go.tar.gz"
+    dest: "/opt/go{{ go_version }}.linux-{{ architecture }}"
+    extra_opts: [--strip-components=1]
+    remote_src: yes
+
+
+- name: Export go
+  shell: |
+    export PATH=$PATH:"/opt/go{{ go_version }}.linux-{{ architecture }}/bin"
+    export GOROOT="/opt/go{{ go_version }}.linux-{{ architecture }}"
+    export GOPATH=$HOME/go
+  args:
+    executable: /bin/bash
+
+- name: Create template to get source for go programming
+  template:
+    src: 'go.sh.j2'
+    dest: '/etc/profile.d/go.sh'
+    mode: 0444
+    owner: root
+    group: root
+
+- name: Load source for go
+  shell: |
+    source /etc/profile.d/go.sh
+  args:
+    executable: /bin/bash
