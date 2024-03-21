@@ -7,7 +7,6 @@
     - role: 's3storage'
       S3_MOUNTS:
         - fs: "project1"
-        - fs: "project_1"
     - nextflow
     - anaconda
     - singularity

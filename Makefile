@@ -3,7 +3,7 @@ all: minio setup vagrant server single
 .PHONY: minio server client vagrant setup single
 
 minio:
-	docker-compose up -d minio
+	docker compose up -d createbuckets
 
 setup: requirements.txt
 	python3 -m venv .env && \
