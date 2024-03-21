@@ -1,19 +1,17 @@
 ---
-- name: Collect server information
+- name: Common set up
   hosts: all
-  gather_facts: yes
   become: yes
   become_user: root
-  tasks:
-  - name: Add the inventory into /etc/hosts
-    ansible.builtin.lineinfile:
-      dest: /etc/hosts
-      regexp: '.*{{ item }}$'
-      line: "{{ hostvars[item]['ansible_host'] }} {{item}}"
-      state: present
-    when: hostvars[item]['ansible_facts']['default_ipv4'] is defined
-    with_items:
-      - "{{ groups['all'] }}"
+  roles:
+    - role: 's3storage'
+      S3_MOUNTS:
+        - fs: "project1"
+        - fs: "project_1"
+    - nextflow
+    - anaconda
+    - singularity
+
 
 - name: Slurm master
   hosts: slurm_master
@@ -21,13 +19,12 @@
   become_user: root
   roles:
     - slurm-master
-    - nextflow
     - nextflow-demo
-    - anaconda
     - role: 'nfs-server'
       NFS_EXPORTS:
         - path: '/home/'
           clients: "{{groups.slurm_worker + groups.slurm_submit|default([])}}"
+
 
 - name: Slurm worker
   hosts: slurm_worker
@@ -35,8 +32,6 @@
   become_user: root
   roles:
     - slurm-worker
-    - singularity
-    - anaconda
     - role: 'nfs-client'
       NFS_MOUNTS:
         - fs: '{{groups.slurm_master[0]}}:/home'
