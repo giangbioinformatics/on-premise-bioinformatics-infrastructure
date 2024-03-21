@@ -1,0 +1,5 @@
+# Use go
+# instead of the one provided by the Linux distribution.
+export PATH="/opt/go{{go_version}}.linux-{{architecture}}/bin:${PATH}"
+export GOROOT=/opt/go{{go_version}}.linux-{{architecture}}
+export GOPATH=$HOME/go

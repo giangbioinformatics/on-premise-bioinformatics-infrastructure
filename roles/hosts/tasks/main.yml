@@ -1,5 +1,3 @@
-
----
 - name: Add the inventory into /etc/hosts
   ansible.builtin.lineinfile:
     dest: /etc/hosts
@@ -9,3 +7,4 @@
   when: hostvars[item]['ansible_facts']['default_ipv4'] is defined
   with_items:
     - "{{ groups['all'] }}"
+
