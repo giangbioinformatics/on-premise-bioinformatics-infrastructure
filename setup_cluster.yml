@@ -4,6 +4,7 @@
   become: yes
   become_user: root
   roles:
+    - hosts
     - role: 's3storage'
       S3_MOUNTS:
         - fs: "project1"
