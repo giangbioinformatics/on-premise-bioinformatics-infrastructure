@@ -1,57 +1,29 @@
 ---
-  - name: Install required packages
-    package:
-      name:
-        - build-essential
-        - libssl-dev
-        - uuid-dev
-        - libgpgme-dev
-        - squashfs-tools
-        - libseccomp-dev
-        - wget
-        - pkg-config
-        - git
-        - libspice-client-glib-2.0-dev
-        - cryptsetup
-        - libglib2.0-dev
-        - runc
-      state: latest
-    when: ansible_distribution == "Ubuntu" or ansible_distribution == "CentOS"
+- name: Check if Singularity is installed and its version
+  command: "dpkg-query -W -f='${Version}' singularity-ce"
+  register: installed_version
+  ignore_errors: true
+  changed_when: false
+  when: installed_version is not defined  # Only execute if the package is not installed
 
-  - name: Download the Singularity release
-    get_url:
-      url: "https://github.com/sylabs/singularity/releases/download/v{{ singularity_version }}/singularity-ce-{{ singularity_version }}.tar.gz"
-      dest: "/tmp/singularity-{{ singularity_version }}.tar.gz"
-      mode: 0644
+- name: Get system architecture
+  command: "dpkg --print-architecture"
+  register: system_architecture
+  changed_when: false
 
-  - name: Create the "/opt/singularity-{{ singularity_version }}" directory
-    file:
-      path: "/opt/singularity-{{ singularity_version }}"
-      state: directory
-      mode: 0755
+- name: Download Singularity deb package
+  get_url:
+    url: "{{ singularity_deb_url }}"
+    dest: "/tmp/{{ singularity_deb_file }}"
+  when: expected_version != installed_version.stdout | default('') and system_architecture.stdout == 'amd64'
 
-  - name: Untar the Singularity archive
-    unarchive:
-      src: "/tmp/singularity-{{ singularity_version }}.tar.gz"
-      dest: "/opt/singularity-{{ singularity_version }}"
-      extra_opts: [--strip-components=1]
-      remote_src: yes
+- name: Install Singularity
+  apt:
+    deb: "/tmp/{{ singularity_deb_file }}"
+  when: expected_version != installed_version.stdout | default('') and system_architecture.stdout == 'amd64'
 
-  - name: Run mconfig, make, and install Singularity
-    shell: ./mconfig && make -C builddir && make -C builddir install
-    args:
-      chdir: "/opt/singularity-{{ singularity_version }}"
-    environment: 
-      PATH: "{{ ansible_env.PATH }}:/opt/go{{ go_version }}.linux-{{ architecture }}/bin"
-
-  # - name: Export Singularity path
-  #   template:
-  #     src: 'singularity.sh.j2'
-  #     dest: '/etc/profile.d/singularity.sh'
-  #     mode: 0444
-  #     owner: root
-  #     group: root
-
-  # - name: Reload Singularity
-  #   shell:
-  #     cmd: bash -c "source /etc/profile.d/singularity.sh"
+- name: Cleanup deb file
+  file:
+    path: "/tmp/{{ singularity_deb_file }}"
+    state: absent
+  when: expected_version != installed_version.stdout | default('') and system_architecture.stdout == 'amd64'

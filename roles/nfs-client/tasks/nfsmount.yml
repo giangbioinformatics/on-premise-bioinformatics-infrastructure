@@ -4,7 +4,8 @@
   file:
     path={{fs.mountpoint}}
     state=directory
-
+  when: not ansible_check_mode
+  
 - name: add to /etc/fstab
   become: true
   become_user: root

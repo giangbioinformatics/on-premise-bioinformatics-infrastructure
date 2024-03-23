@@ -6,7 +6,14 @@
     mode: 0777
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"
-
+- name: Ensure the nextflow directory exists
+  file:
+    path: "/home/{{ansible_user}}/.nextflow"
+    state: directory
+    mode: 0777
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    
 - name: Add config nextflow
   copy:
     src: "config"

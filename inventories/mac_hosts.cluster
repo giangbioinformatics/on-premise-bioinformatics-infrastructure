@@ -1,8 +1,8 @@
 [slurm_master]
-mac-l1-c2r4 ansible_host=192.168.58.10
+mac-l1-c2r4 ansible_host=192.168.58.11
 
 [slurm_worker]
-mac-c1-c2r4 ansible_host=192.168.58.11
+mac-l2-c2r4 ansible_host=192.168.58.12
 
 [slurm:children]
 slurm_master
@@ -12,3 +12,7 @@ slurm_worker
 ansible_user=vagrant
 nextflow_url=https://github.com/nextflow-io/nextflow/releases/download/v22.05.0-edge/nextflow-22.05.0-edge-all
 nextflow_path=/opt/nextflow-v22.05.0
+aws_access_key_id=root
+aws_secret_access_key=password
+s3_url=http://192.168.58.10:9000
+s3_project_mount_point=/mnt/s3storage
