@@ -20,12 +20,12 @@
 
 # every host in the cluster is a NIS client
 {% for host in NIS_CLIENTS %}
-host        {{hostvars[host].ansible_host}}
+host        {{hostvars[host].ansible_default_ipv4.address}}
 {% endfor %}
 
 {% if NIS_SLAVES %}
 # NIS slave servers (if any) need access too
 {% for host in NIS_SLAVES %}
-host        {{hostvars[host].ansible_host}}
+host        {{hostvars[host].ansible_default_ipv4.address}}
 {% endfor %}
 {% endif %}

@@ -7,14 +7,7 @@
     mode: 0400
   notify:
     - restart ypbind
-  when: 'is_ubuntu'
 
-
-- name: Restart nis to fix this issue in Ubuntu 20.04 on nis client
-  service:
-    name: '{{item}}'
-    state: restarted
-  loop: '{{nis_client_services}}'
 
 - name: Ensure NIS/YP is used as a name service
   lineinfile:

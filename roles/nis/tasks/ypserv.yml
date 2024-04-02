@@ -1,4 +1,5 @@
 ---
+
 - name: Deploy `ypserv` configuration files
   template:
     dest: '{{nis_securenets_path}}'
@@ -6,6 +7,7 @@
     mode: 0400
   notify:
     - restart NIS master services
+
 
 - name: Deploy `yppasswdd` configuration file (CentOS/RHEL)
   copy:
@@ -26,11 +28,6 @@
 - name: Ensure `ypserv` is restarted if config files changed
   meta: flush_handlers
 
-- name: Restart nis to fix this issue in Ubuntu 20.04 on nis server
-  service:
-    name: '{{item}}'
-    state: restarted
-  loop: '{{nis_master_services}}'
 
 - name: Ensure `ypserv` starts at boot
   service:
@@ -38,6 +35,7 @@
     state: started
     enabled: yes
   loop: '{{nis_master_services}}'
+
 
 - name: Update NIS/YP databases (NIS master server)
   command: |
