@@ -1,0 +1,4 @@
+dependencies:
+  - role: robertdebock.java
+    version: "4.2.0"
+    name: javassh 

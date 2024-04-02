@@ -1,30 +1,37 @@
----
-- name: Install Java package (Ubuntu/Debian)
-  apt:
-    name: "{{ java_apt_package }}"
-    state: present
-    update_cache: yes
-  when: 'is_debian_compatible'
+- name: Check if nextflow already exists
+  stat:
+    path: "/opt/nextflow/v_{{ nextflow_version }}/nextflow"
+  register: nextflow_file
 
-- name: Install Java package (CentOS/RHEL)
-  yum:
-    name: "{{ java_yum_package }}"
-    state: present
-    update_cache: yes
-  when: 'is_rhel_compatible'
+- name: Remove nextflow directory if nextflow file doesn't exist
+  file:
+    path: /opt/nextflow
+    state: absent
+  when: not nextflow_file.stat.exists
 
-- name: Create nextflow directory
+- name: Create nextflow directory if it doesn't exist
   file:
     path: /opt/nextflow
     state: directory
     mode: 0755
     owner: root
     group: root
+  when: not nextflow_file.stat.exists
 
-- name: Download nextflow container
+- name: Create directory for Nextflow version if it doesn't exist
+  file:
+    path: "/opt/nextflow/v_{{ nextflow_version }}"
+    state: directory
+    mode: 0755
+    owner: root
+    group: root
+  when: not nextflow_file.stat.exists
+  
+- name: Download nextflow container if not already downloaded
+  when: not nextflow_file.stat.exists
   get_url:
     url: "https://github.com/nextflow-io/nextflow/releases/download/v{{ nextflow_version }}/nextflow-{{ nextflow_version }}-all"
-    dest: /opt/nextflow/nextflow
+    dest: "/opt/nextflow/v_{{ nextflow_version }}/nextflow"
     mode: 0755
     owner: root
     group: root

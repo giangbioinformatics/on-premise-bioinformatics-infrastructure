@@ -1,29 +1,170 @@
 ---
-- name: Check if Singularity is installed and its version
-  command: "dpkg-query -W -f='${Version}' singularity-ce"
-  register: installed_version
-  ignore_errors: true
-  changed_when: false
-  when: installed_version is not defined  # Only execute if the package is not installed
+- name: Gather os specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "vars/{{ ansible_os_family }}-{{ ansible_distribution_major_version }}.yml"
+        - "vars/{{ ansible_os_family }}.yml"
+      skip: true
+  tags: vars
 
-- name: Get system architecture
-  command: "dpkg --print-architecture"
-  register: system_architecture
-  changed_when: false
-
-- name: Download Singularity deb package
-  get_url:
-    url: "{{ singularity_deb_url }}"
-    dest: "/tmp/{{ singularity_deb_file }}"
-  when: expected_version != installed_version.stdout | default('') and system_architecture.stdout == 'amd64'
-
-- name: Install Singularity
-  apt:
-    deb: "/tmp/{{ singularity_deb_file }}"
-  when: expected_version != installed_version.stdout | default('') and system_architecture.stdout == 'amd64'
-
-- name: Cleanup deb file
-  file:
-    path: "/tmp/{{ singularity_deb_file }}"
+- name: singularity | Uninstall singularity
+  package:
     state: absent
-  when: expected_version != installed_version.stdout | default('') and system_architecture.stdout == 'amd64'
+    name: singularity
+
+- name: singularity | install software base
+  package:
+    state: present
+    name: "{{ singularity_software_base }}"
+  register: _install_result
+  until: _install_result is success
+  retries: 10
+  delay: 2
+
+- name: singularity | check Go dependencies installed
+  command: 'bash -c "go list github.com/golang/dep"'
+  environment:
+    PATH: '{{ golang_install_dir }}/bin:{{ ansible_env.PATH }}'
+    GOROOT: '{{ golang_install_dir }}'
+    GOPATH: '{{ golang_gopath }}'
+  register: go_installed
+  changed_when: false
+  failed_when: false
+
+- name: singularity | get older go installation(s)
+  find:
+    paths: /opt/go/
+    file_type: directory
+    use_regex: true
+    patterns: ['^(?!{{ golang_version }})1.[0-9]{1,2}(.[0-9]{1,2}|)$']
+  register: older_go_versions
+  when: only_one_go_version
+
+- name: singularity | remove older Go installation(s)
+  file:
+    path: '{{ item.path }}'
+    state: absent
+  with_items: "{{ older_go_versions.files }}"
+  when: only_one_go_version
+
+- name: singularity | get Go version
+  command: go version
+  environment:
+    PATH: '{{ golang_install_dir }}/bin:{{ ansible_env.PATH }}'
+    GOROOT: '{{ golang_install_dir }}'
+    GOPATH: '{{ golang_gopath }}'
+  register: go_versions
+  changed_when: false
+
+- name: singularity | display Go version
+  debug:
+    var: go_versions
+  environment:
+    PATH: '{{ golang_install_dir }}/bin:{{ ansible_env.PATH }}'
+    GOROOT: '{{ golang_install_dir }}'
+    GOPATH: '{{ golang_gopath }}'
+
+- name: singularity | install Go dependencies
+  command: go get -u -v github.com/golang/dep/cmd/dep
+  environment:
+    PATH: '{{ golang_install_dir }}/bin:{{ ansible_env.PATH }}'
+    GOROOT: '{{ golang_install_dir }}'
+    GOPATH: '{{ golang_gopath }}'
+    GO111MODULE: 'off'
+  when:
+    - not ansible_check_mode
+    - go_versions.rc == 1
+
+- name: singularity | create directory for singularity
+  file:
+    path: "{{ golang_install_dir }}/src/github.com/sylabs/"
+    recurse: true
+
+- name: singularity | clone the Singularity repository
+  git:
+    repo: https://github.com/sylabs/singularity.git
+    version: v{{ singularity_version }}
+    dest: "{{ golang_install_dir }}/src/github.com/sylabs/singularity"
+
+- name: singularity | check singularity installed version
+  command: 'bash -c "singularity --version | grep \"{{ singularity_version }}\""'
+  register: singularity_installed_version
+  environment:
+    PATH: '/usr/local/bin/:{{ ansible_env.PATH }}'
+  changed_when: false
+  failed_when: false
+
+- name: singularity | display singularity installed version
+  debug:
+    var: singularity_installed_version
+  when: singularity_role_debug
+
+- name: singularity | compile the Singularity binary | mconfig
+  command: ./mconfig
+  args:
+    chdir: "{{ golang_install_dir }}/src/github.com/sylabs/singularity"
+  environment:
+    PATH: '{{ golang_install_dir }}/bin:{{ ansible_env.PATH }}'
+    GOROOT: '{{ golang_install_dir }}'
+    GOPATH: '{{ golang_gopath }}'
+  when:
+    - not ansible_check_mode
+    - singularity_installed_version.rc == 1
+
+- name: singularity | compile the Singularity binary | make
+  make:
+    chdir: "{{ golang_install_dir }}/src/github.com/sylabs/singularity/builddir"
+  environment:
+    PATH: '{{ golang_install_dir }}/bin:{{ ansible_env.PATH }}'
+    GOROOT: '{{ golang_install_dir }}'
+    GOPATH: '{{ golang_gopath }}'
+    GO111MODULE: 'off'
+  register: singularity_make
+  when:
+    - not ansible_check_mode
+    - singularity_installed_version.rc == 1
+
+- name: singularity | debug make
+  debug:
+    var: singularity_make
+  when: singularity_role_debug
+
+- name: singularity | compile the Singularity binary | make install
+  make:
+    target: install
+    chdir: "{{ golang_install_dir }}/src/github.com/sylabs/singularity/builddir"
+  environment:
+    PATH: '{{ golang_install_dir }}/bin:{{ ansible_env.PATH }}'
+    GOROOT: '{{ golang_install_dir }}'
+    GOPATH: '{{ golang_gopath }}'
+  register: singularity_make_install
+  when:
+    - not ansible_check_mode
+    - singularity_installed_version.rc == 1
+
+- name: singularity | debug make install
+  debug:
+    var: singularity_make_install
+  when: singularity_role_debug
+
+- name: singularity | check singularity installed version
+  command: 'singularity --version | grep "{{ singularity_version }}"'
+  environment:
+    PATH: '/usr/local/bin/:{{ ansible_env.PATH }}'
+  register: singularity_installed_version
+  changed_when: false
+  # failed_when: false
+
+- name: singularity | display singularity installed version
+  debug:
+    var: singularity_installed_version
+  when: singularity_role_debug
+
+- name: singularity | config bind bind_path
+  lineinfile:
+    path: "{{ singularity_conf_path }}"
+    line: 'bind path = {{ item }}'
+    create: true
+    backup: true
+  with_items: "{{ bind_paths | default([]) }}"

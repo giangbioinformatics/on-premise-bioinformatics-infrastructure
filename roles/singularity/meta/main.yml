@@ -1,0 +1,30 @@
+---
+dependencies:
+  - role: gantsign.golang
+    version: 2.10.2
+
+galaxy_info:
+  role_name: singularity
+  author: lecorguille
+  description: Singularity for Linux.
+  issue_tracker_url: https://github.com/abims-sbr/ansible-singularity/issues
+  company: "Sorbonne Université, CNRS, FR2424, ABiMS, Station Biologique, 29680, Roscoff, France"
+  license: "license (GNU 3.0)"
+  min_ansible_version: 2.5.0
+  platforms:
+    - name: EL
+      versions:
+        - all
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+  galaxy_tags:
+    - tools
+    - singularity
+    - container

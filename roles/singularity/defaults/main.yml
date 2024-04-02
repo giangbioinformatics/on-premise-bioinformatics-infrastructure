@@ -1,5 +1,16 @@
 ---
-singularity_version: "4.1.2"
-singularity_deb_url: "https://github.com/sylabs/singularity/releases/download/v{{ singularity_version }}/singularity-ce_{{ singularity_version }}-focal_amd64.deb"
-singularity_deb_file: "singularity-ce_{{ singularity_version }}-focal_amd64.deb"
-expected_version: "4.1.2"
+# Singularity target version
+singularity_version: "3.7.1"
+
+singularity_conf_path: "/usr/local/etc/singularity/singularity.conf"
+
+bind_paths: []
+# example
+# - /shared/home/
+# - /shared/project/
+
+# go variables
+only_one_go_version: false
+golang_gopath: /opt/go/packages
+
+singularity_role_debug: false

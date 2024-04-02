@@ -1,0 +1,17 @@
+roles:
+- src: robertdebock.java
+  version: "4.2.0"
+  name: java
+
+- src: gantsign.golang
+  version: 3.1.6
+  name: golang
+
+- src: abims_sbr.singularity
+  version: 3.7.1-4
+  name: singularity 
+
+- src: andrewrothstein.miniconda
+  version: "v6.1.9"
+  name: miniconda
+

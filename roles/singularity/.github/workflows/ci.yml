@@ -1,0 +1,73 @@
+---
+name: CI
+'on':
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 7 * * 1"
+
+defaults:
+  run:
+    working-directory: 'my.role'
+
+jobs:
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: 'my.role'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install yamllint ansible-lint
+
+      - name: Lint code.
+        run: |
+          yamllint .
+          # ansible-lint
+
+  molecule:
+    name: Molecule
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        distro:
+          - centos8
+          - centos7
+          - ubuntu2004
+          - ubuntu1804
+
+    steps:
+      - name: Check out the codebase.
+        uses: actions/checkout@v2
+        with:
+          path: 'my.role'
+
+      - name: Set up Python 3.
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install test dependencies.
+        run: pip3 install ansible molecule[docker] docker
+
+      - name: Install requirements.yml
+        run: ansible-galaxy install --roles-path molecule/default/roles -vr requirements.yml
+
+      - name: Run Molecule tests.
+        run: molecule test
+        env:
+          PY_COLORS: '1'
+          ANSIBLE_FORCE_COLOR: '1'
+          MOLECULE_DISTRO: ${{ matrix.distro }}
+          MOLECULE_PLAYBOOK: ${{ matrix.playbook }}

@@ -1,0 +1,13 @@
+---
+# Default value for HPC
+singularity_software_base:
+  - build-essential
+  - uuid-dev
+  - libgpgme-dev
+  - squashfs-tools
+  - libseccomp-dev
+  - wget
+  - pkg-config
+  - git
+  - cryptsetup-bin
+  - libssl-dev
