@@ -1,0 +1,62 @@
+- name: 'Disable root docker.service'
+  ansible.builtin.systemd:
+    name: docker.service
+    enabled: false
+  when: docker_rootless and docker_disable_root_daemon == true
+
+- name: 'Disable root docker.socket'
+  ansible.builtin.systemd:
+    name: docker.socket
+    enabled: false
+  when: docker_rootless and docker_disable_root_daemon == true
+
+- name: 'Install uidmap for rootless UID mapping'
+  ansible.builtin.package:
+    name: uidmap
+    state: present
+  when: docker_rootless
+
+- name: 'Install Docker rootless'
+  become: false
+  ansible.builtin.shell: dockerd-rootless-setuptool.sh install
+  args:
+    creates: /home/{{ ansible_user }}/.config/systemd/user/docker.service
+  when: docker_rootless
+
+- name: 'Set capabilities for rootlesskit'
+  community.general.capabilities:
+    path: /usr/bin/rootlesskit
+    capability: '{{ docker_capabilities | join(",") }}=ep'
+    state: present
+  register: docker_capabilities_update
+  when: docker_rootless
+
+- name: 'Restart docker service'
+  become: false
+  ansible.builtin.systemd:
+    state: restarted
+    name: docker
+    scope: user
+  when: docker_rootless and docker_capabilities_update.changed
+
+- name: 'Get current user ID'
+  getent:
+    database: passwd
+    key: '{{ ansible_user }}'
+  when: docker_rootless
+
+- name: 'Add export for path'
+  become: false
+  ansible.builtin.lineinfile:
+    path: /home/{{ ansible_user }}/.bashrc
+    line: export path=/usr/bin:$PATH
+    create: yes
+  when: docker_rootless
+
+- name: 'Add export for DOCKER_HOST'
+  become: false
+  ansible.builtin.lineinfile:
+    path: /home/{{ ansible_user }}/.bashrc
+    line: export DOCKER_HOST=unix:///run/user/{{ getent_passwd[ansible_user][1] }}/docker.sock
+    create: yes
+  when: docker_rootless

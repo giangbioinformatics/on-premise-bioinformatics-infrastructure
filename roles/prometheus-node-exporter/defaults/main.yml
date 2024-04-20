@@ -1,0 +1,11 @@
+node_exporter_container: "quay.io/prometheus/node-exporter:v1.3.1"
+node_exporter_prom_dir: "/run/prometheus"
+node_exporter_svc_name: "docker.node-exporter.service"
+node_exporter_state: started
+node_exporter_enabled: yes
+
+prometheus_config_dir: /etc/prometheus
+prometheus_cfg_endpoint_dir: "{{ prometheus_config_dir }}/endpoints"
+node_exporter_conf_template: "node-exporter.yml.j2"
+
+node_exporter_max_cpu: "0.5"
