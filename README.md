@@ -1,63 +1,67 @@
-# on-premise-bioinformatics-infrastructure
-This repo for setting up the  local infrastructure for bioinformatics analysis using
-[Slurm](https://slurm.schedmd.com/overview.html)
+# On-Premise Bioinformatics Infrastructure
 
-Machines: 
-+ Monitor server:
-    + geerlingguy.docker: Docker container
-    + prometheus: monitoring metrics collection
-    + alertmanager: alert to slack channel with specific rules. Ex: down node
-    + grafana: dashboard for monitoring usage
-    
+This repository provides configurations for setting up a local infrastructure tailored for bioinformatics analysis, leveraging [Slurm](https://slurm.schedmd.com/overview.html).
 
-+ Slurm HPC:
-    For common roles:
-    + nextflow
-    + mambaorg.micromamba
-    + geerlingguy.docker
-    + prometheus-node-exporter
-    + abims_sbr.singularity
+## Machines
 
-    For specific nodes:
-    + Controller node
-        + slurm-master: controller and login node
-        + rsyslog-server: syslog server controller
+### Monitor Server:
+- **geerlingguy.docker**: Docker container
+- **prometheus**: Metrics collection for monitoring
+- **alertmanager**: Alerts to Slack channel with specific rules (e.g., down node)
+- **grafana**: Dashboard for monitoring resource usage
 
-    + Worker nodes
-        + slurm-worker: computing nodes
-        + rsyslog-client: syslog client worker
-        
-## Step 1:
-If you do not have have the machines but still want to test this repo, 
-try to use the virtual machine with vagrant support.
-Create the virtual env. It requires to install python and and vagrant, vmware_fusion for mac m1,2,3 or virtualmachine for other linux kernel
+### Slurm HPC:
+#### Common Roles:
+- `nextflow`
+- `mambaorg.micromamba`
+- `geerlingguy.docker`
+- `prometheus-node-exporter`
+- `abims_sbr.singularity`
 
-With virtual setup
-```
+#### Specific Nodes:
+- **Controller Node:**
+  - `slurm-master`: Controller and login node
+  - `rsyslog-server`: Syslog server controller
+
+- **Worker Nodes:**
+  - `slurm-worker`: Computing nodes
+  - `rsyslog-client`: Syslog client worker
+
+## Setup Steps
+
+### Step 1: Set Up Machines
+
+If you don't have the required machines but still want to test this repository, you can use virtual machines with Vagrant support.
+
+**For Virtual Setup:**
+```bash
 bash scripts/setup.sh
 ```
-With your real machines
-```
+
+**For Real Machines:**
+```bash
 bash scripts/ansible_only.sh
 ```
-Adjust your hosts before running ansible-playbook
-`inventories/hosts`
-```
+Before running `ansible-playbook`, adjust your hosts configuration in `inventories/hosts`:
+```bash
 source env/bin/activate
 ansible-playbook -i inventories/hosts setup_cluster.yml
 ```
-## Step 3: 
-Test
-Monitoring:
-Grafana: `<monitoring_node_id>:3000`
 
-Slurm cluster:
-Login to slurm 
-```
+### Step 2: Testing
+
+#### Monitoring:
+Access Grafana at `<monitoring_node_id>:3000`
+
+#### Slurm Cluster:
+Login to Slurm:
+```bash
 ssh <user>@<slurm_login>
 ```
-Run the nextflow workflow
-```
+Run the Nextflow workflow:
+```bash
 bash fetchngs/fetchngs.sh
-# check your result at fetchngs/output
+# Check your results at fetchngs/output
 ```
+
+By following these steps, you'll have your on-premise bioinformatics infrastructure set up and ready for use.
