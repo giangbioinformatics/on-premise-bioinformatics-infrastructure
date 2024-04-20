@@ -1,0 +1,4 @@
+docker_rootless: true
+docker_disable_root_daemon: true
+docker_capabilities:
+  - cap_net_bind_service

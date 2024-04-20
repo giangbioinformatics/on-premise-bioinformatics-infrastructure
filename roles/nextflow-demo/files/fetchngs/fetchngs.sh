@@ -5,4 +5,4 @@ nextflow run nf-core/fetchngs -r 1.12.0 \
 --max_time 1h \
 --outdir fetchngs/output \
 -work-dir fetchngs/work \
---input inputs.csv
+--input fetchngs/inputs.csv

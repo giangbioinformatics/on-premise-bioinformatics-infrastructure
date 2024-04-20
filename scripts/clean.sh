@@ -1,0 +1,1 @@
+cd scripts/virtual/ && vagrant destroy -f && cd ../../

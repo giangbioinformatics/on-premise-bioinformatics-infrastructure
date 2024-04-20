@@ -1,0 +1,17 @@
+slurm_exporter_container: "{{ 'nttg8100/prometheus-slurm-exporter_arm64:1.0.0' if ansible_architecture == 'aarch64' else 'deepops/prometheus-slurm-exporter:latest' }}"
+slurm_exporter_svc_name: "docker.slurm-exporter.service"
+slurm_exporter_state: started
+slurm_exporter_enabled: yes
+
+slurm_install_prefix: /usr
+
+prometheus_config_dir: /etc/prometheus
+prometheus_cfg_endpoint_dir: "{{ prometheus_config_dir }}/endpoints"
+slurm_exporter_conf_template: "slurm-exporter.yml.j2"
+
+grafana_svc_name: "docker.grafana.service"
+grafana_data_dir: /var/lib/grafana
+grafana_cfg_dashboard_path: "{{ grafana_data_dir }}/dashboards"
+grafana_user_id: 472
+
+slurm_exporter_host_group: "{{ slurm_monitoring_group | default('slurm_master') }}"
