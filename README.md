@@ -1,19 +1,63 @@
 # on-premise-bioinformatics-infrastructure
-This repo for setting up the  local infrastructure for bioinformatics analysis
+This repo for setting up the  local infrastructure for bioinformatics analysis using
+[Slurm](https://slurm.schedmd.com/overview.html)
+
+Machines: 
++ Monitor server:
+    + geerlingguy.docker: Docker container
+    + prometheus: monitoring metrics collection
+    + alertmanager: alert to slack channel with specific rules. Ex: down node
+    + grafana: dashboard for monitoring usage
+    
+
++ Slurm HPC:
+    For common roles:
+    + nextflow
+    + mambaorg.micromamba
+    + geerlingguy.docker
+    + prometheus-node-exporter
+    + abims_sbr.singularity
+
+    For specific nodes:
+    + Controller node
+        + slurm-master: controller and login node
+        + rsyslog-server: syslog server controller
+
+    + Worker nodes
+        + slurm-worker: computing nodes
+        + rsyslog-client: syslog client worker
+        
 ## Step 1:
+If you do not have have the machines but still want to test this repo, 
+try to use the virtual machine with vagrant support.
 Create the virtual env. It requires to install python and and vagrant, vmware_fusion for mac m1,2,3 or virtualmachine for other linux kernel
+
+With virtual setup
 ```
-python3 -m venv env
+bash scripts/setup.sh
+```
+With your real machines
+```
+bash scripts/ansible_only.sh
+```
+Adjust your hosts before running ansible-playbook
+`inventories/hosts`
+```
 source env/bin/activate
-pip3 install -r requirements.txt
+ansible-playbook -i inventories/hosts setup_cluster.yml
 ```
-## Step 2:
-Setting the config and inventory
+## Step 3: 
+Test
+Monitoring:
+Grafana: `<monitoring_node_id>:3000`
+
+Slurm cluster:
+Login to slurm 
 ```
-TODO: write readme later
+ssh <user>@<slurm_login>
 ```
-## Step 3:
-Run and install the software
+Run the nextflow workflow
 ```
-TODO: write readme later
+bash fetchngs/fetchngs.sh
+# check your result at fetchngs/output
 ```
