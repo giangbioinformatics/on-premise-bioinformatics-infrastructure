@@ -47,7 +47,7 @@ Adjust your hosts before running ansible-playbook
 source env/bin/activate
 ansible-playbook -i inventories/hosts setup_cluster.yml
 ```
-## Step 3: 
+## Step 2: 
 Test
 Monitoring:
 Grafana: `<monitoring_node_id>:3000`
