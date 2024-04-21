@@ -28,6 +28,7 @@ Machines:
         + rsyslog-client: syslog client worker
         
 ## Step 1:
+Requirements: python3, python3-venv
 If you do not have have the machines but still want to test this repo, 
 try to use the virtual machine with vagrant support.
 Create the virtual env. It requires to install python and and vagrant, vmware_fusion for mac m1,2,3 or virtualmachine for other linux kernel
