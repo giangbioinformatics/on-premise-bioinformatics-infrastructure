@@ -4,13 +4,14 @@ controller ansible_host=192.168.58.10
 [slurm_worker]
 worker ansible_host=192.168.58.11
 
-[slurm_exporter_host_group]
-controller 
-
 [slurm:children]
 slurm_master
 slurm_worker
 
 [all:vars]
 ansible_user=vagrant
+aws_access_key_id=<your access key id>
+aws_secret_access_key=<your secret key >
+s3_url=<your s3 url>
+s3_project_mount_point=<your bucket mount point>
 slack_api_url=https://hooks.slack.com/services/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

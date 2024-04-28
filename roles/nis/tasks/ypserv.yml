@@ -1,4 +1,5 @@
 ---
+
 - name: Deploy `ypserv` configuration files
   template:
     dest: '{{nis_securenets_path}}'
@@ -26,11 +27,6 @@
 - name: Ensure `ypserv` is restarted if config files changed
   meta: flush_handlers
 
-- name: Restart nis to fix this issue in Ubuntu 20.04 on nis server
-  service:
-    name: '{{item}}'
-    state: restarted
-  loop: '{{nis_master_services}}'
 
 - name: Ensure `ypserv` starts at boot
   service:
@@ -45,3 +41,12 @@
   args:
     chdir: /var/yp
   when: 'is_nis_master_server'
+
+- name: Deploy `ypbind` configuration files
+  template:
+    dest: '/etc/yp.conf'
+    src: 'etc/yp.conf.j2'
+    mode: 0400
+  notify:
+    - restart ypbind
+  when: 'is_ubuntu'

@@ -35,7 +35,6 @@ elif [ "${OS}" == "ubuntu" ]; then
     setup_ubuntu
 fi
 # 4. Create the VM machines
-if []
 up_vm_and_inventory
 # 5. Setup the cluster
 setup_cluster

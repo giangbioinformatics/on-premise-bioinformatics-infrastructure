@@ -1,4 +1,5 @@
 ---
+
 - name: Load distribution-specific parameters
   include_tasks: 'init-{{ansible_os_family}}.yml'
 
@@ -9,7 +10,7 @@
     question: nis/domain
     answer: '{{NIS_DOMAIN}}'
     vtype: string
-  when: 'is_ubuntu'
+  when: 'is_debian_compatible'
 
 
 # since both ypbind *and* ypserv are shipped in the same package, it's the init
@@ -22,7 +23,7 @@
   loop:
     - etc/default/nis
     - etc/defaultdomain
-  when: 'is_ubuntu'
+  when: 'is_debian_compatible'
 
 
 - name: Set NIS domain (CentOS/RHEL)

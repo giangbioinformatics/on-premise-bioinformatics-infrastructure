@@ -1,4 +1,5 @@
 ---
+
 - name: restart slurmdbd
   service:
     name='{{slurmdbd_service_name}}'

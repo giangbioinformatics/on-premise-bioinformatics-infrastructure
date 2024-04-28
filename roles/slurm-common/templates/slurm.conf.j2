@@ -19,14 +19,13 @@ ClusterName=elasticluster
 #
 {% for host in groups.slurm_worker %}
 # {{host}}
-NodeName={{host}} RealMemory={{hostvars[host].ansible_memtotal_mb|int - 384}} CPUs={{hostvars[host].ansible_processor_vcpus}} Sockets={{hostvars[host].ansible_processor_vcpus}} CoresPerSocket=1 ThreadsPerCore=1 {% if hostvars[host].gpu_count_total|default(0) > 0 %}{% for model in hostvars[host].gpu_count %} Gres=gpu:{{model}}:{{hostvars[host].gpu_count[model]}}{% endfor %}{% endif %}
+NodeName={{host}} RealMemory={{hostvars[host].ansible_memtotal_mb|int - 1000}} CPUs={{hostvars[host].ansible_processor_vcpus}} Sockets={{hostvars[host].ansible_processor_vcpus}} CoresPerSocket=1 ThreadsPerCore=1 {% if hostvars[host].gpu_count_total|default(0) > 0 %}{% for model in hostvars[host].gpu_count %} Gres=gpu:{{model}}:{{hostvars[host].gpu_count[model]}}{% endfor %}{% endif %}
 
 {% endfor %}
 
 
 ## Cluster partitions
-#Config here need to automation later
-#PartitionName=graphic Nodes=c32r128-1.ktest,MaxTime=INFINITE State=UP Default=NO
+#
 PartitionName=main Nodes={% for host in groups.slurm_worker %}{{host}},{%endfor%} MaxTime=INFINITE State=UP Default=YES
 
 
