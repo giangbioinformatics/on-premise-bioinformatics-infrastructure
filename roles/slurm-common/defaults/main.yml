@@ -3,7 +3,9 @@
 
 # Version of SLURM to install; choose among '17.02', '17.11', and '18.08'.
 # Only used on RHEL/CentOS 7
-slurm_version: '18.08'
+# For Ubunu 20.04, the version is fix 19.05.5
+slurm_version: '18.08' 
+slurm_defmempercpu: 2048
 
 SLURM_MASTER_HOST: "{{groups['slurm_master'][0]}}"
 SLURM_MASTER_ADDR: "{{hostvars[SLURM_MASTER_HOST].ansible_default_ipv4.address}}"

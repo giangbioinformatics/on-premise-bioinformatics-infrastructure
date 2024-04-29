@@ -1,5 +1,10 @@
 
 ---
+- name: Update apt package cache
+  ansible.builtin.apt:
+    update_cache: yes
+
+    
 - name: Add the inventory into /etc/hosts
   ansible.builtin.lineinfile:
     dest: /etc/hosts

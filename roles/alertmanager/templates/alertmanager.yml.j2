@@ -6,5 +6,5 @@ route:
 receivers:
   - name: 'slack-notifications'
     slack_configs:
-    - channel: '#my-slack-channel'
+    - channel: '{{ slack_channel }}'
       send_resolved: true

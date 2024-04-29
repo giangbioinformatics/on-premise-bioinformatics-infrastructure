@@ -5,11 +5,14 @@
   become_user: root
   roles:
     - hosts
+    - utilities
     - nextflow
     - mambaorg.micromamba
     - geerlingguy.docker
     - prometheus-node-exporter
     - abims_sbr.singularity
+    - role: nis
+      NIS_MASTER: "{{groups.slurm_master[0]}}"
 
 - name: Slurm master
   hosts: slurm_master
@@ -27,6 +30,11 @@
         NFS_EXPORTS:
           - path: '/home/'
             clients: "{{groups.slurm_worker + groups.slurm_submit|default([])}}"
+  tasks:
+    - service:
+        name=slurmctld
+        state=restarted
+      when: 'is_debian_compatible and (is_debian_8_or_later or is_ubuntu_15_10_or_later)'
 
 - name: Slurm worker
   hosts: slurm_worker

@@ -19,7 +19,7 @@ ClusterName=elasticluster
 #
 {% for host in groups.slurm_worker %}
 # {{host}}
-NodeName={{host}} RealMemory={{hostvars[host].ansible_memtotal_mb|int - 1000}} CPUs={{hostvars[host].ansible_processor_vcpus}} Sockets={{hostvars[host].ansible_processor_vcpus}} CoresPerSocket=1 ThreadsPerCore=1 {% if hostvars[host].gpu_count_total|default(0) > 0 %}{% for model in hostvars[host].gpu_count %} Gres=gpu:{{model}}:{{hostvars[host].gpu_count[model]}}{% endfor %}{% endif %}
+NodeName={{host}} RealMemory={{hostvars[host].ansible_memtotal_mb|int - 384}} CPUs={{hostvars[host].ansible_processor_vcpus}} Sockets={{hostvars[host].ansible_processor_vcpus}} CoresPerSocket=1 ThreadsPerCore=1 {% if hostvars[host].gpu_count_total|default(0) > 0 %}{% for model in hostvars[host].gpu_count %} Gres=gpu:{{model}}:{{hostvars[host].gpu_count[model]}}{% endfor %}{% endif %}
 
 {% endfor %}
 
@@ -37,8 +37,6 @@ SelectType={{slurm_selecttype|default('select/cons_res')}}
 SelectTypeParameters={{slurm_selecttypeparameters|default('CR_Core_Memory')}}
 {% if slurm_defmempercpu is defined %}
 DefMemPerCPU={{slurm_defmempercpu|int}}
-{% else %}
-#DefMemPerCPU={{ (slurm_workers_max_free_memory_mb / slurm_workers_max_vcpus)|int }}
 {% endif %}
 
 # use the "multifactor" plugin with weights set up to be multi-user ready

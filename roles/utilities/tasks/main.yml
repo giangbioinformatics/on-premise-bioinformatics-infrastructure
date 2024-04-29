@@ -1,0 +1,15 @@
+- name: Copy utilities to /opt
+  copy:
+    src: "utilities"
+    dest: "/opt"
+    owner: root
+    group: sudo
+    mode: 0770
+
+- name: Export utilities to /etc/profile.d used only by root user
+  copy:
+    src: "utilities.sh"
+    dest: "/etc/profile.d/utilities.sh"
+    mode: 0770
+    owner: root
+    group: sudo

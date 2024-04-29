@@ -57,5 +57,5 @@ up_vm_and_inventory(){
 }
 
 setup_cluster(){
-    ansible-playbook -i ${ROOT_DIR}/inventories/hosts ${ROOT_DIR}/setup_cluster.yml
+    ansible-playbook -i ${ROOT_DIR}/inventories/hosts ${ROOT_DIR}/river_cluster.yml
 }
