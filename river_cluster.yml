@@ -23,7 +23,7 @@
       - prometheus-slurm-exporter
       - prometheus
       - grafana
-      - alertmanager
+      # - alertmanager
       - rsyslog_server
       - nextflow-demo
       - role: 'nfs-server'
@@ -41,6 +41,7 @@
   become: true
   become_user: root
   roles:
+    - server-code
     - slurm-worker
     - rsyslog_client
     - role: 'nfs-client'
