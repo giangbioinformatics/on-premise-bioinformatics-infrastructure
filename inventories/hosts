@@ -14,5 +14,4 @@ aws_access_key_id=<your access key id>
 aws_secret_access_key=<your secret key >
 s3_url=<your s3 url>
 s3_project_mount_point=<your bucket mount point>
-slack_api_url=https://hooks.slack.com/services/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
-slack_channel=test_alertmanager
+slack_api_url=<your slack url>
