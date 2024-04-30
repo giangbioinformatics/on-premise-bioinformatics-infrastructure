@@ -20,7 +20,7 @@
   become: false
   ansible.builtin.shell: dockerd-rootless-setuptool.sh install
   args:
-    creates: /home/{{ ansible_user }}/.config/systemd/user/docker.service
+    creates: /opt/.config/systemd/user/docker.service
   when: docker_rootless
 
 - name: 'Set capabilities for rootlesskit'
@@ -39,24 +39,10 @@
     scope: user
   when: docker_rootless and docker_capabilities_update.changed
 
-- name: 'Get current user ID'
-  getent:
-    database: passwd
-    key: '{{ ansible_user }}'
-  when: docker_rootless
-
-- name: 'Add export for path'
-  become: false
-  ansible.builtin.lineinfile:
-    path: /home/{{ ansible_user }}/.bashrc
-    line: export path=/usr/bin:$PATH
-    create: yes
-  when: docker_rootless
-
 - name: 'Add export for DOCKER_HOST'
   become: false
   ansible.builtin.lineinfile:
     path: /home/{{ ansible_user }}/.bashrc
-    line: export DOCKER_HOST=unix:///run/user/{{ getent_passwd[ansible_user][1] }}/docker.sock
+    line: export DOCKER_HOST=unix://${XDG_RUNTIME_DIR}/docker.sock
     create: yes
   when: docker_rootless
