@@ -14,7 +14,8 @@ Machines:
     For common roles:
     + nextflow
     + mambaorg.micromamba
-    + geerlingguy.docker
+    + geerlingguy.docker (only for sudo group user)
+    + docker-rootless (if user requests)
     + prometheus-node-exporter
     + abims_sbr.singularity
 
