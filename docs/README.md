@@ -26,7 +26,7 @@ slurm_enable_rsyslog_server: true
 slurm_enable_rsyslog_client: true
 ```
 
-For more information about our syslog forwarding functionality, please see the [centralized syslog guide](../misc/syslog.md).
+For more information about our syslog forwarding functionality, please see the [centralized syslog guide](./misc/syslog.md).
 
 ## Configuring shared filesystems
 
