@@ -3,6 +3,8 @@ This repo for setting up the  local infrastructure for bioinformatics analysis u
 [Slurm](https://slurm.schedmd.com/overview.html)
 
 For roles details, check this: [role documentations](docs/README.md)
+
+
 Machines: 
 + Monitor server:
     + geerlingguy.docker: Docker container
