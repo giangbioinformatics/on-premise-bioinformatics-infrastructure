@@ -23,20 +23,11 @@
 
 - name: Compile Goofys using Go if it was cloned
   shell: |
-    source /etc/profile.d/go.sh
+    source /etc/profile.d/golang.sh
     cd "/opt/goofys_{{ goofys_version }}"
     GOOS=linux GOARCH={{ architecture }} go build -buildvcs=false
   args:
     executable: /bin/bash
-  when: not goofys_directory.stat.exists
-
-- name: Create template to get source for Go programming
-  template:
-    src: 'go.sh.j2'
-    dest: '/etc/profile.d/go.sh'
-    mode: 0444
-    owner: root
-    group: root
 
 - name: Create template to get source for Goofys
   template:
@@ -68,3 +59,4 @@
     fs: '{{ item }}'
   loop: '{{ S3_MOUNTS }}'
   tags: s3storage
+  when: mount_s3_storage == true

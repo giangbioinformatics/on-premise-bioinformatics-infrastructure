@@ -11,6 +11,7 @@
     - geerlingguy.docker
     - prometheus-node-exporter
     - abims_sbr.singularity
+    - s3storage
     - role: nis
       NIS_MASTER: "{{groups.slurm_master[0]}}"
 

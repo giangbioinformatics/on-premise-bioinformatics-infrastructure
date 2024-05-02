@@ -1,4 +1,4 @@
-- name: Create an account for default cluster
+- name: Install latest version code-server
   tags:
     - slurm
   shell: |
