@@ -1,4 +1,5 @@
-# on-premise-bioinformatics-infrastructure
+# ON-PREMISE BIOINFORMATICS INFRASTRUCTURE
+## SLURM CLUSTER
 This repo for setting up the  local infrastructure for bioinformatics analysis using
 [Slurm](https://slurm.schedmd.com/overview.html)
 
@@ -21,6 +22,7 @@ Machines:
     + docker-rootless (if user requests)
     + prometheus-node-exporter
     + abims_sbr.singularity
+    + goofys s3 storage mount
 
     For specific nodes:
     + Controller node
@@ -31,7 +33,7 @@ Machines:
         + slurm-worker: computing nodes
         + rsyslog-client: syslog client worker
         
-## Step 1:
+### Step 1:
 Requirements: python3, python3-venv
 If you do not have have the machines but still want to test this repo, 
 try to use the virtual machine with vagrant support.
@@ -49,9 +51,9 @@ Adjust your hosts before running ansible-playbook
 `inventories/hosts`
 ```
 source env/bin/activate
-ansible-playbook -i inventories/hosts setup_cluster.yml
+ansible-playbook -i inventories/hosts river_cluster.yml
 ```
-## Step 2: 
+### Step 2: 
 Test
 Monitoring:
 Grafana: `<monitoring_node_id>:3000`
@@ -66,3 +68,19 @@ Run the nextflow workflow
 bash fetchngs/fetchngs.sh
 # check your result at fetchngs/output
 ```
+
+## SINGLE MACHINE
+Follow the session slurm cluster, on the second step, change to run this:
+```
+source env/bin/activate
+ansible-playbook -i inventories/hosts river_local.yml
+```
+
+It will install:
++ nextflow
++ mambaorg.micromamba
++ geerlingguy.docker
++ abims_sbr.singularity
++ goofys s3 storage mount
+
+Note: due to the single machine, the metrics services do not need to install.
