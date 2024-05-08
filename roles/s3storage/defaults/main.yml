@@ -1,5 +1,4 @@
 ---
 goofys_version: "0.24.0"
-go_version: "1.21.5"
 S3_MOUNTS: []
 mount_s3_storage: false

@@ -1,3 +1,6 @@
 ---
 
 SLURM_ACCOUNTING_HOST: '{{groups.slurm_master[0]|default("slurmdbd")}}'
+SLURM_ACCOUNTING_DB_NAME: "slurm"
+SLURM_ACCOUNTING_DB_USER: "slurm"
+SLURM_ACCOUNTING_DB_PASS: "ua7diKee"

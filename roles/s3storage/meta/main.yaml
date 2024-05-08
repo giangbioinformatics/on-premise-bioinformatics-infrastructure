@@ -1,5 +1,0 @@
-# slurm-master/meta/main.yml
----
-
-dependencies:
-  - role: gantsign.golang

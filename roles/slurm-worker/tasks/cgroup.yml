@@ -86,7 +86,7 @@
 
 - name: Ensure release agent directory exists
   file:
-    dest: '/etc/slurm/cgroup'
+    dest: '/etc/slurm-llnl/cgroup'
     state: directory
     mode: 0755
     owner: root
@@ -95,8 +95,8 @@
 
 - name: Deploy cgroup-specific release agent script
   copy:
-    src: 'etc/slurm/cgroup/release_agent'
-    dest: '/etc/slurm/cgroup/release_{{ item }}'
+    src: 'etc/slurm-llnl/cgroup/release_agent'
+    dest: '/etc/slurm-llnl/cgroup/release_{{ item }}'
     mode: 0555
     owner: root
     group: root
@@ -106,7 +106,7 @@
 - name: Deploy SLURM cgroup configuration file (main)
   template:
     src: 'cgroup.conf.j2'
-    dest: '/etc/slurm/cgroup.conf'
+    dest: '/etc/slurm-llnl/cgroup.conf'
     mode: 0444
     owner: root
     group: root
@@ -114,8 +114,8 @@
 
 - name: Deploy SLURM cgroup configuration file (devices)
   copy:
-    src: 'etc/slurm/cgroup_allowed_devices_file.conf'
-    dest: '/etc/slurm/cgroup_allowed_devices_file.conf'
+    src: 'etc/slurm-llnl/cgroup_allowed_devices_file.conf'
+    dest: '/etc/slurm-llnl/cgroup_allowed_devices_file.conf'
     mode: 0444
     owner: root
     group: root

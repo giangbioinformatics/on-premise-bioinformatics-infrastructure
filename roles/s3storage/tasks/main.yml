@@ -13,21 +13,14 @@
     state: directory
     mode: 0755
   when: not goofys_directory.stat.exists
-
-- name: Clone Goofys repository if it doesn't exist
-  git:
-    repo: "https://github.com/giangbioinformatics/goofys-S3-fuse-v{{ goofys_version }}.git"
-    dest: "/opt/goofys_{{ goofys_version }}"
-    update: no
+  
+- name: Download binary
+  get_url:
+    url: "https://github.com/giangbioinformatics/goofys-S3-fuse-v{{ goofys_version }}/releases/download/{{ goofys_version }}/goofys_{{ architecture }}"
+    dest: "/opt/goofys_{{ goofys_version }}/goofys"
+    mode: 0755
+    owner: root
   when: not goofys_directory.stat.exists
-
-- name: Compile Goofys using Go if it was cloned
-  shell: |
-    source /etc/profile.d/golang.sh
-    cd "/opt/goofys_{{ goofys_version }}"
-    GOOS=linux GOARCH={{ architecture }} go build -buildvcs=false
-  args:
-    executable: /bin/bash
 
 - name: Create template to get source for Goofys
   template:

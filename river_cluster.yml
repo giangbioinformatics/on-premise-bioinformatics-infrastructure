@@ -5,13 +5,14 @@
   become_user: root
   roles:
     - hosts
+    - slurm-common
+    - s3storage
     - utilities
     - nextflow
     - mambaorg.micromamba
     - geerlingguy.docker
     - prometheus-node-exporter
     - abims_sbr.singularity
-    - s3storage
     - role: nis
       NIS_MASTER: "{{groups.slurm_master[0]}}"
 
@@ -24,6 +25,7 @@
       - prometheus-slurm-exporter
       - prometheus
       - grafana
+      - reverse-proxy
       # - alertmanager
       - rsyslog_server
       - nextflow-demo
@@ -35,15 +37,14 @@
     - service:
         name=slurmctld
         state=restarted
-      when: 'is_debian_compatible and (is_debian_8_or_later or is_ubuntu_15_10_or_later)'
 
 - name: Slurm worker
   hosts: slurm_worker
   become: true
   become_user: root
   roles:
-    - server-code
     - slurm-worker
+    - server-code
     - rsyslog_client
     - role: 'nfs-client'
       NFS_MOUNTS:
@@ -53,16 +54,6 @@
     - service:
         name=slurmd
         state=restarted
-      when: 'is_debian_compatible and (is_debian_8_or_later or is_ubuntu_15_10_or_later)'
     - service:
         name=slurm-llnl
         state=restarted
-      when: 'is_debian_compatible and not (is_debian_8_or_later or is_ubuntu_15_10_or_later)'
-    - service:
-        name=slurmd
-        state=restarted
-      when: is_rhel7_compatible
-    - service:
-        name=slurm
-        state=restarted
-      when: is_rhel6_compatible

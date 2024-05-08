@@ -37,6 +37,8 @@ SelectType={{slurm_selecttype|default('select/cons_res')}}
 SelectTypeParameters={{slurm_selecttypeparameters|default('CR_Core_Memory')}}
 {% if slurm_defmempercpu is defined %}
 DefMemPerCPU={{slurm_defmempercpu|int}}
+{% else %}
+#DefMemPerCPU={{ (slurm_workers_max_free_memory_mb / slurm_workers_max_vcpus)|int }}
 {% endif %}
 
 # use the "multifactor" plugin with weights set up to be multi-user ready
@@ -95,7 +97,7 @@ GresTypes=gpu
 
 CheckpointType=checkpoint/none
 #CheckpointType=checkpoint/blcr
-JobCheckpointDir=/var/lib/slurm/checkpoint
+JobCheckpointDir=/var/lib/slurm-llnl/checkpoint
 
 # requeue jobs on node failure, unless users ask otherwise
 JobRequeue=1
@@ -148,7 +150,7 @@ Waittime=0
 #
 ControlMachine={{SLURM_MASTER_HOST}}
 
-SlurmctldPidFile={{slurm_pid_dir}}/slurmctld.pid
+SlurmctldPidFile=/run/slurmctld.pid
 SlurmctldPort=6817
 SlurmctldTimeout=300
 
@@ -164,8 +166,8 @@ MailProg=/usr/bin/mail
 ## `slurmd` settings (compute nodes)
 #
 SlurmdPort=6818
-SlurmdPidFile={{slurm_pid_dir}}/slurmd.pid
-SlurmdSpoolDir=/var/lib/slurm/slurmd
+SlurmdPidFile=/run/slurmd.pid
+SlurmdSpoolDir=/var/lib/slurm-llnl/slurmd
 SlurmdTimeout=300
 
 SlurmdDebug=error

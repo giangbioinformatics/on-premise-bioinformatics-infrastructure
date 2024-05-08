@@ -1,5 +1,0 @@
----
-singularity_version: "4.1.2"
-singularity_deb_url: "https://github.com/sylabs/singularity/releases/download/v{{ singularity_version }}/singularity-ce_{{ singularity_version }}-focal_amd64.deb"
-singularity_deb_file: "singularity-ce_{{ singularity_version }}-focal_amd64.deb"
-expected_version: "4.1.2"

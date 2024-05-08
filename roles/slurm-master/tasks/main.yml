@@ -1,8 +1,71 @@
 # slurm-master/tasks/main.yml
 ---
+- block:
+    - name: Install required SLURM packages (Debian/Ubuntu)
+      package:
+        name:
+          - libpmi0-dev
+          - libslurm-dev
+          - libslurm-perl
+          - libslurmdb-perl
+          - slurm-client
+          - slurm-wlm-torque
+          - sview
+        state: '{{ pkg_install_state }}'
+    # these are present in some but not all releases of Debian/Ubuntu;
+    # rather than writing complex `when:` clauses, it's just easier to
+    # try to install them and ignore failure...
+    - name: Install optional SLURM packages (Debian/Ubuntu)
+      package:
+        name:
+          - slurm-drmaa-dev
+        state: '{{ pkg_install_state }}'
+      ignore_errors: yes
+  when: 'is_debian_8_or_later or is_ubuntu_15_10_or_later'
 
-- name: Load distribution-specific parameters
-  include_tasks: 'init-{{ansible_os_family}}.yml'
+
+- block:
+  # since all the SLURM binaries are bundled in a single package
+  # `slurm-llnl`, we have to install it and *then* stop all the services
+    - name: Install required SLURM packages (older Debian/Ubuntu)
+      package:
+        name:
+          - libpmi0-dev
+          - libslurm-dev
+          - libslurm-perl
+          - libslurmdb-perl
+          - slurm-llnl
+          - slurm-llnl-sview
+          - slurm-llnl-torque
+        state: '{{ pkg_install_state }}'
+    - service:
+        name: 'slurm-llnl'
+        enabled: no
+        state: stopped
+  when: 'is_debian_or_ubuntu and not (is_debian_8_or_later or is_ubuntu_15_10_or_later)'
+
+- name: Set SLURM master playbook params (Debian/Ubuntu)
+  set_fact:
+    slurmctld_service_name: slurmctld
+    slurmctld_packages:
+      - mailutils
+      - slurmctld
+    slurmdbd_service_name: slurmdbd
+    slurmdbd_packages:
+      - slurmdbd
+  when: is_debian_8_or_later or is_ubuntu_15_10_or_later
+
+
+- name: Set SLURM master playbook params (older Debian/Ubuntu)
+  set_fact:
+    slurmctld_service_name: slurm-llnl
+    slurmctld_packages:
+      - mailutils
+      - slurm-llnl
+    slurmdbd_service_name: slurm-llnl-slurmdbd
+    slurmdbd_packages:
+      - slurm-llnl-slurmdbd
+  when: is_debian_or_ubuntu and not (is_debian_8_or_later or is_ubuntu_15_10_or_later)
 
 - import_tasks: db.yml
 

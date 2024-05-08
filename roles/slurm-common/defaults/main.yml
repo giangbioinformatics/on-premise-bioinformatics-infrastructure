@@ -1,12 +1,6 @@
 # slurm-common/defaults/main.yml
 ---
-
-# Version of SLURM to install; choose among '17.02', '17.11', and '18.08'.
-# Only used on RHEL/CentOS 7
-# For Ubunu 20.04, the version is fix 19.05.5
-slurm_version: '18.08' 
-slurm_defmempercpu: 2048
-
+slurm_version: '19.05'
 SLURM_MASTER_HOST: "{{groups['slurm_master'][0]}}"
 SLURM_MASTER_ADDR: "{{hostvars[SLURM_MASTER_HOST].ansible_default_ipv4.address}}"
 
@@ -15,11 +9,10 @@ SLURM_MASTER_ADDR: "{{hostvars[SLURM_MASTER_HOST].ansible_default_ipv4.address}}
 # hosts in the cluster.  Default to `slurmdbd` so if host
 # names/aliases are set according to the services that run, everything
 # works fine.
-SLURM_ACCOUNTING_HOST: "slurmdbd"
+SLURM_ACCOUNTING_HOST: '{{groups.slurm_master[0]|default("slurmdbd")}}'
 SLURM_ACCOUNTING_DB_NAME: "slurm"
 SLURM_ACCOUNTING_DB_USER: "slurm"
 SLURM_ACCOUNTING_DB_PASS: "ua7diKee"
-
 
 # defaults used in `slurm.conf`
 slurm_jobacctgatherfrequency: 60

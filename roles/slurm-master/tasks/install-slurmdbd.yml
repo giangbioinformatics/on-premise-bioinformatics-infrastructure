@@ -5,7 +5,7 @@
 - name: Deploy SLURMDBD configuration
   template:
     src: slurmdbd.conf.j2
-    dest: /etc/slurm/slurmdbd.conf
+    dest: /etc/slurm-llnl/slurmdbd.conf
     owner: root
     group: root
     mode: '0600'
