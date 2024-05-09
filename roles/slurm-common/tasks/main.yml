@@ -20,6 +20,7 @@
     state: directory
     owner: slurm
     group: slurm
+    recurse: yes
   loop:
     - /etc/slurm-llnl
     - /var/log/slurm
@@ -39,3 +40,18 @@
     owner: root
     group: root
     mode: 0444
+  
+# - name: Recusrively change owner:group of item {{item}}
+#   file:
+#     path: '{{item}}'
+#     state: directory
+#     owner: slurm
+#     group: slurm
+#     recurse: yes
+#   loop:
+#     - /etc/slurm-llnl
+#     - /var/log/slurm
+#     - /var/run/slurm
+#     - /var/spool/slurm
+#   tags:
+#     - slurm

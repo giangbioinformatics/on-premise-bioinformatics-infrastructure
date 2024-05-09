@@ -150,14 +150,14 @@ Waittime=0
 #
 ControlMachine={{SLURM_MASTER_HOST}}
 
-SlurmctldPidFile=/run/slurmctld.pid
+SlurmctldPidFile=/var/run/slurmctld.pid
 SlurmctldPort=6817
 SlurmctldTimeout=300
 
-StateSaveLocation=/var/spool/slurm
+StateSaveLocation=/var/lib/slurm-llnl/slurmctld
 
-SlurmctldDebug=error
-SlurmctldLogFile=/var/log/slurm/slurmctld.log
+SlurmctldDebug=info
+SlurmctldLogFile=/var/log/slurm-llnl/slurmctld.log
 DebugFlags=backfill,cpu_bind,priority,reservation,selecttype,steps
 
 MailProg=/usr/bin/mail
@@ -166,12 +166,12 @@ MailProg=/usr/bin/mail
 ## `slurmd` settings (compute nodes)
 #
 SlurmdPort=6818
-SlurmdPidFile=/run/slurmd.pid
+SlurmdPidFile=/var/run/slurmd.pid
 SlurmdSpoolDir=/var/lib/slurm-llnl/slurmd
 SlurmdTimeout=300
 
-SlurmdDebug=error
-SlurmdLogFile=/var/log/slurm/slurmd.log
+SlurmdDebug=info
+SlurmdLogFile=/var/log/slurm-llnl/slurmd.log
 
 AuthType=auth/munge
 CryptoType=crypto/munge

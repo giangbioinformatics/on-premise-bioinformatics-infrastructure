@@ -26,7 +26,7 @@
       - prometheus
       - grafana
       - reverse-proxy
-      # - alertmanager
+      - alertmanager
       - rsyslog_server
       - nextflow-demo
       - role: 'nfs-server'
@@ -36,6 +36,9 @@
   tasks:
     - service:
         name=slurmctld
+        state=restarted
+    - service:
+        name=slurmdbd
         state=restarted
 
 - name: Slurm worker
@@ -53,7 +56,4 @@
   tasks:
     - service:
         name=slurmd
-        state=restarted
-    - service:
-        name=slurm-llnl
         state=restarted
