@@ -18,7 +18,7 @@ NISCLIENT={% if is_nis_client %}true{% else %}false{% endif %}
 
 # Location of the master NIS password file (for yppasswdd).
 # If you change this make sure it matches with /var/yp/Makefile.
-YPPWDDIR=
+YPPWDDIR=/etc
 
 # Do we allow the user to use ypchsh and/or ypchfn ? The YPCHANGEOK
 # fields are passed with -e to yppasswdd, see it's manpage.
@@ -30,9 +30,8 @@ YPCHANGEOK=chsh
 NISMASTER='{% if is_nis_slave_server %}{{NIS_MASTER}}{% endif %}'
 
 # Additional options to be given to ypbind when it is started.
-YPBINDARGS='-p 833 -no-dbus'
+# YPBINDARGS='-p 833 -no-dbus'
 YPBINDARGS=
-
 # Additional options to be given to ypserv when it is started.
 YPSERVARGS='-p 834'
 
