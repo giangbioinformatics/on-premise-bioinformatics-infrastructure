@@ -13,26 +13,26 @@
     - geerlingguy.docker
     - prometheus-node-exporter
     - abims_sbr.singularity
-    - role: nis
-      NIS_MASTER: "{{groups.slurm_master[0]}}"
 
 - name: Slurm master
   hosts: slurm_master
   become: true
   become_user: root
   roles:
-      - slurm-master
-      - prometheus-slurm-exporter
-      - prometheus
-      - grafana
-      - reverse-proxy
-      - alertmanager
-      - rsyslog_server
-      - nextflow-demo
-      - role: 'nfs-server'
-        NFS_EXPORTS:
-          - path: '/home/'
-            clients: "{{groups.slurm_worker + groups.slurm_submit|default([])}}"
+    - role: nis
+      NIS_MASTER: "{{groups.slurm_master[0]}}"
+    - slurm-master
+    - prometheus-slurm-exporter
+    - prometheus
+    - grafana
+    - reverse-proxy
+    - alertmanager
+    - rsyslog_server
+    - nextflow-demo
+    - role: 'nfs-server'
+      NFS_EXPORTS:
+        - path: '/home/'
+          clients: "{{groups.slurm_worker + groups.slurm_submit|default([])}}"
   tasks:
     - service:
         name=slurmctld
@@ -46,6 +46,8 @@
   become: true
   become_user: root
   roles:
+    - role: nis
+      NIS_MASTER: "{{groups.slurm_master[0]}}"
     - slurm-worker
     - server-code
     - rsyslog_client

@@ -1,7 +1,21 @@
 ---
 
-- name: Load distribution-specific parameters
-  include_tasks: 'init-{{ansible_os_family}}.yml'
+- name: Set NIS common playbook params (Debian)
+  set_fact:
+    nis_common_packages:
+      - nis
+    # no additional packages, all is provided by `nis`
+    nis_client_packages: []
+    nis_client_services:
+      - rpcbind
+      - nis
+    # no additional packages for `ypserv`, it's all included in `nis`
+    nis_master_packages: []
+    nis_master_services:
+      - rpcbind
+      - nis
+    nis_securenets_path: '/etc/ypserv.securenets'
+
 
 
 - name: Pre-load debconf answer to questions (Debian/Ubuntu)
