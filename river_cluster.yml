@@ -8,11 +8,11 @@
     - slurm-common
     - s3storage
     - utilities
-    - nextflow
     - mambaorg.micromamba
     - geerlingguy.docker
     - prometheus-node-exporter
     - abims_sbr.singularity
+    - nextflow
 
 - name: Slurm master
   hosts: slurm_master
@@ -32,6 +32,8 @@
     - role: 'nfs-server'
       NFS_EXPORTS:
         - path: '/home/'
+          clients: "{{groups.slurm_worker + groups.slurm_submit|default([])}}"
+        - path: '/data/'
           clients: "{{groups.slurm_worker + groups.slurm_submit|default([])}}"
   tasks:
     - service:
@@ -55,6 +57,8 @@
       NFS_MOUNTS:
         - fs: '{{groups.slurm_master[0]}}:/home'
           mountpoint: '/home'
+        - fs: '{{groups.slurm_master[0]}}:/data'
+          mountpoint: '/data'
   tasks:
     - service:
         name=slurmd

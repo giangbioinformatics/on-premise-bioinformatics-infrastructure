@@ -43,3 +43,20 @@
     mode: 0444
     owner: root
     group: root
+
+- name: Create Nextflow directories
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '1777'
+  loop: "{{ nextflow_directories }}"
+
+- name: Add config nextflow
+  copy:
+    src: "config"
+    dest: "{{ nextflow_cache_dir }}"
+    owner: root
+    group: root
+    mode: '1777'

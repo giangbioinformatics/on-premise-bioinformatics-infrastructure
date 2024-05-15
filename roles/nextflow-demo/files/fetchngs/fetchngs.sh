@@ -1,5 +1,5 @@
 nextflow run nf-core/fetchngs -r 1.12.0 \
--profile conda \
+-profile singularity \
 --max_cpus 2 \
 --max_memory 2GB \
 --max_time 1h \
