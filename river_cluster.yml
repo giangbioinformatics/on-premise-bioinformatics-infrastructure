@@ -6,7 +6,6 @@
   roles:
     - hosts
     - slurm-common
-    - s3storage
     - utilities
     - mambaorg.micromamba
     - geerlingguy.docker
@@ -19,6 +18,9 @@
   become: true
   become_user: root
   roles:
+    # - role: s3storage
+    #   S3_MOUNTS:
+    #     - fs: 'example_project'
     - role: nis
       NIS_MASTER: "{{groups.slurm_master[0]}}"
     - slurm-master
@@ -29,6 +31,7 @@
     - alertmanager
     - rsyslog_server
     - nextflow-demo
+    
     - role: 'nfs-server'
       NFS_EXPORTS:
         - path: '/home/'
