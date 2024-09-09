@@ -60,8 +60,8 @@
       NFS_MOUNTS:
         - fs: '{{groups.slurm_master[0]}}:/home'
           mountpoint: '/home'
-        - fs: '{{groups.slurm_master[0]}}:/data'
-          mountpoint: '/data'
+        # - fs: '{{groups.slurm_master[0]}}:/data'
+        #   mountpoint: '/data'
   tasks:
     - service:
         name=slurmd

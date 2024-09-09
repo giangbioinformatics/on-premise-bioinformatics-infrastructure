@@ -21,6 +21,28 @@ PASSWORD=$(openssl rand -base64 20)
 echo $PASSWORD > ".jobs/<<uuid_job_id>>/job.password"
 """
 
+CLOUD_STORAGE_HEADER = """
+# prepare the configuration file
+mkdir -p ~/.aws
+cat <<EOF > ~/.aws/config
+[default]
+region = <<project_region>>
+EOF
+
+GOOFYS=~/.tools/goofys
+if [-f "$GOOFYS" ]; then
+    echo "goofys is already installed"
+else
+    echo "Installing goofys"
+    mkdir -p ~/.tools
+    cd ~/.tools
+    wget https://github.com/kahing/goofys/releases/download/v0.24.0/goofys
+    chmod +x goofys
+fi
+# mount s3
+$GOOFYS --profile <<project_name>> --file-mode=0666 --dir-mode=0777 --endpoint=<<project_endpoint>> <<project_bucket>>:.jobs/<<uuid_job_id>>/mount  
+"""
+
 
 def get_tool_name_path(
     tools_dir: str,
@@ -97,6 +119,7 @@ def generate_script(
 
     with open(job_script_path, "r") as file:
         content = file.read()
+        content = replace_placeholders(content, {"tool_name": tool_name})
         if params:
             content = replace_placeholders(content, params)
 

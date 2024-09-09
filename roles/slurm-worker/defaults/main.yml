@@ -23,4 +23,6 @@ slurm_proctracktype: 'proctrack/linuxproc'
 slurm_returntoservice: 2
 slurm_selecttype: 'select/cons_res'
 slurm_selecttypeparameters: 'CR_Core_Memory'
-slurm_taskplugin: 'task/none'
+slurm_taskplugin: 'task/cgroup'
+slurm_constrainramspace: true
+slurm_constrainswapspace: true
