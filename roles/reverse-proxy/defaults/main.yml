@@ -1,5 +1,0 @@
-nginx_container: "nginx:latest"
-nginx_svc_name: "docker.nginx.service"
-nginx_config_dir: /etc/nginx/conf.d
-nginx_state: started
-nginx_enabled: yes
