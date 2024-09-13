@@ -4,10 +4,11 @@
   become: true
   become_user: root
   roles:
-    - hosts
-    - utilities
-    - nextflow
-    - mambaorg.micromamba
-    - geerlingguy.docker
-    - abims_sbr.singularity
-    - s3storage
+    # - hosts
+    - slurm-single
+    # - utilities
+    # - nextflow
+    # - mambaorg.micromamba
+    # - geerlingguy.docker
+    # - abims_sbr.singularity
+    # - s3storage
