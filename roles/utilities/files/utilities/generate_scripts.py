@@ -66,7 +66,7 @@ def clone_or_update_repo(
     local_repo,
     version,
 ):
-    if not os.path.exists(local_repo):
+    if not os.path.exists(os.path.expanduser(local_repo)):
         try:
             subprocess.check_call(f"git clone {git} {local_repo}", shell=True)
         except subprocess.CalledProcessError:
@@ -117,13 +117,13 @@ def generate_script(
     header = replace_placeholders(DEFAULT_HEADER, config_data)
     access_header = replace_placeholders(ACCESS_HEADER, config_data)
 
-    with open(job_script_path, "r") as file:
+    with open(os.path.expanduser(job_script_path), "r") as file:
         content = file.read()
         content = replace_placeholders(content, {"tool_name": tool_name})
         if params:
             content = replace_placeholders(content, params)
 
-    with open(output_file, "w") as file:
+    with open(os.path.expanduser(output_file), "w") as file:
         file.write(header)
         if allow_access:
             file.write("\n" + access_header)

@@ -4,12 +4,12 @@
     dest: "/opt"
     owner: root
     group: sudo
-    mode: 0770
+    mode: 0775
 
 - name: Export utilities to /etc/profile.d used only by root user
   copy:
     src: "utilities.sh"
     dest: "/etc/profile.d/utilities.sh"
-    mode: 0770
+    mode: 0775
     owner: root
     group: sudo
